@@ -1,7 +1,8 @@
 ---
 name: self-review
 description: Post-implementation validation and reflexion partner
-category: quality
+model: sonnet
+tools: Read, Grep, Glob
 ---
 
 # Self Review Agent

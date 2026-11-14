@@ -113,4 +113,4 @@ Pay special attention to:
 
 ## Why the refutation step matters
 
-Adversarial reviewers without a refutation pass over-report: every hypothetical becomes a "finding", and the human learns to skim past the noise. Forcing the agent to attack its own challenges — and to *show the refuted ones* for transparency — keeps the surviving findings credible. The same principle powers the verify pass in [`06-advanced-patterns/headless-review-fanout-guide.md`](../../06-advanced-patterns/headless-review-fanout-guide.md).
+Adversarial reviewers without a refutation pass over-report: every hypothetical becomes a "finding", and the human learns to skim past the noise. Forcing the agent to attack its own challenges — and to *show the refuted ones* for transparency — keeps the surviving findings credible.

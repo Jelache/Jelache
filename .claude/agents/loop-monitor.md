@@ -2,14 +2,14 @@
 name: loop-monitor
 description: Monitors autonomous sessions (QA pipelines, deploy pipelines, long unattended scripts) for stalls, token runaway, and infinite loops. Use as a watchdog alongside long-running unattended runs.
 model: haiku
-tools: Read, Bash
+tools: Read, Grep, Glob
 ---
 
 # Loop Monitor Agent
 
 Monitors a running autonomous Claude session for failure modes that don't produce errors: stalls, token runaway, and repeated actions with no progress. Read-only — never interferes with the primary session.
 
-**Use alongside**: any long-running unattended pipeline (QA agent, deploy pipeline, overnight refactor run). See [`16-autonomous-agents/`](../../16-autonomous-agents/guide.md) for the surrounding pattern.
+**Use alongside**: any long-running unattended pipeline (QA agent, deploy pipeline, overnight refactor run).
 
 ## What This Agent Detects
 
@@ -35,6 +35,7 @@ Same tool call (same tool, same input) appears > N times consecutively with noth
 | `SESSION_LOG` | Path to JSONL session log of the primary agent | Required |
 | `STALL_THRESHOLD` | Seconds without activity before alerting | 120s |
 | `REPEAT_THRESHOLD` | Consecutive identical tool calls before alerting | 5 |
+| `NOW` | Current UTC time (ISO 8601), passed by the caller because this agent has no shell to read the clock | Required for stall checks |
 
 ## Output
 
@@ -62,18 +63,17 @@ LOG="$HOME/.claude/sessions/pipeline-$(date +%Y%m%d).jsonl"
 
 while true; do
   sleep 30
-  STATUS=$(claude \
-    --agent loop-monitor \
-    --var SESSION_LOG="$LOG" \
-    --var STALL_THRESHOLD=120 \
-    --print "Check session status")
+  # Subagents take inputs from the prompt text (there is no --var flag)
+  STATUS=$(claude --agent loop-monitor -p \
+    "SESSION_LOG=$LOG STALL_THRESHOLD=120 NOW=$(date -u +%FT%TZ). Check session status")
 
   echo "[$(date +%H:%M:%S)] $STATUS"
 
   case "$STATUS" in
     STALL*|LOOP*|RUNAWAY*)
-      # macOS notification; swap for notify-send / Slack webhook on other platforms
-      osascript -e "display notification \"$STATUS\" with title \"Loop Monitor\" sound name \"Basso\""
+      # Desktop notification: notify-send on Linux, osascript on macOS
+      if command -v notify-send >/dev/null; then notify-send "Loop Monitor" "$STATUS"
+      else osascript -e "display notification \"$STATUS\" with title \"Loop Monitor\""; fi
       ;;
     COMPLETE*)
       echo "Session completed."
