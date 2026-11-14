@@ -1,0 +1,30 @@
+name: Agent Instructions Check
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-doctor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  agent-doctor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Runs the npm package instead of the chiragdarji/agent-doctor@v1 action:
+      # that action's bundle ships without its dependencies and crashes on start.
+      # The version is pinned so a new release cannot run here unreviewed.
+      # Structural rules only (no API key needed).
+      - name: Check agent instruction files
+        run: npx --yes @chiragdarji/agent-doctor@1.5.2 --all --structural-only --fail-on critical
