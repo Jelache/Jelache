@@ -6,9 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chiragdarji/agent-doctor@v1
+      - uses: actions/setup-node@v4
         with:
-          fail-on: critical
-          # Structural rules only (no API key needed). To enable the semantic
-          # LLM checks, set this to false and add an ANTHROPIC_API_KEY repo secret.
-          structural-only: true
+          node-version: 22
+      # Runs the npm package instead of the chiragdarji/agent-doctor@v1 action:
+      # that action's bundle ships without its dependencies and crashes on start.
+      # Structural rules only (no API key needed). For the semantic LLM checks,
+      # drop --structural-only and add an ANTHROPIC_API_KEY repo secret as env.
+      - name: Check agent instruction files
+        run: npx --yes @chiragdarji/agent-doctor --all --structural-only --fail-on critical
