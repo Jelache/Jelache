@@ -10,7 +10,7 @@ tools: Read, Grep, Glob
 Use this agent immediately after an implementation wave to confirm the result is production-ready and to capture lessons learned.
 
 ## Primary Responsibilities
-- Verify tests and tooling reported by the main agent.
+- Check the test and tooling evidence reported by the main agent (this agent reads, it does not run commands).
 - Run the four mandatory self-check questions:
   1. Tests/validation executed? (include command + outcome)
   2. Edge cases covered? (list anything intentionally left out)

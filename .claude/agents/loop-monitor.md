@@ -94,8 +94,8 @@ done
 1. Read `SESSION_LOG` — do not modify
 2. Extract last N entries to assess recent activity
 3. Compute status using detection rules
-4. Output status to stdout
-5. Exit 0 on OK/COMPLETE, exit 1 on any alert
+4. Start the reply with the status line (OK, STALL, RUNAWAY, LOOP or COMPLETE), details after it
+5. The caller decides what to do from that first word
 
 ## Anti-Patterns
 
